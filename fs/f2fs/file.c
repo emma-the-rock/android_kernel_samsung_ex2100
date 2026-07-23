@@ -4222,6 +4222,11 @@ static int f2fs_ioc_decompress_file(struct file *filp, unsigned long arg)
 		goto out;
 	}
 
+	if (f2fs_is_mmap_file(inode)) {
+		ret = -EBUSY;
+		goto out;
+	}
+
 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
 	if (ret)
 		goto out;
@@ -4232,7 +4237,6 @@ static int f2fs_ioc_decompress_file(struct file *filp, unsigned long arg)
 	last_idx = DIV_ROUND_UP(i_size_read(inode), PAGE_SIZE);
 	last_idx >>= fi->i_log_cluster_size;
 
-	down_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
 	for (cluster_idx = 0; cluster_idx < last_idx; cluster_idx++) {
 		page_idx = cluster_idx << fi->i_log_cluster_size;
 
@@ -4303,6 +4307,11 @@ static int f2fs_ioc_compress_file(struct file *filp, unsigned long arg)
 		goto out;
 	}
 
+	if (f2fs_is_mmap_file(inode)) {
+		ret = -EBUSY;
+		goto out;
+	}
+
 	ret = filemap_write_and_wait_range(inode->i_mapping, 0, LLONG_MAX);
 	if (ret)
 		goto out;
@@ -4312,7 +4321,9 @@ static int f2fs_ioc_compress_file(struct file *filp, unsigned long arg)
 
 	set_inode_flag(inode, FI_ENABLE_COMPRESS);
 
-	down_write(&F2FS_I(inode)->i_gc_rwsem[WRITE]);
+	last_idx = DIV_ROUND_UP(i_size_read(inode), PAGE_SIZE);
+	last_idx >>= fi->i_log_cluster_size;
+
 	for (cluster_idx = 0; cluster_idx < last_idx; cluster_idx++) {
 		page_idx = cluster_idx << fi->i_log_cluster_size;
 

@@ -4392,6 +4392,31 @@ static inline int f2fs_is_compressed_cluster(
 static inline bool f2fs_is_sparse_cluster(
 				struct inode *inode,
 				pgoff_t index) { return true; }
+static inline void f2fs_decompress_cluster(struct decompress_io_ctx *dic) { }
+static inline void f2fs_end_read_compressed_page(struct page *page,
+						bool failed, block_t blkaddr)
+{
+	WARN_ON_ONCE(1);
+}
+static inline void f2fs_put_page_dic(struct page *page)
+{
+	WARN_ON_ONCE(1);
+}
+static inline int f2fs_init_compress_inode(struct f2fs_sb_info *sbi) { return 0; }
+static inline void f2fs_destroy_compress_inode(struct f2fs_sb_info *sbi) { }
+static inline int f2fs_init_page_array_cache(struct f2fs_sb_info *sbi) { return 0; }
+static inline void f2fs_destroy_page_array_cache(struct f2fs_sb_info *sbi) { }
+static inline int __init f2fs_init_compress_cache(void) { return 0; }
+static inline void f2fs_destroy_compress_cache(void) { }
+static inline void f2fs_invalidate_compress_page(struct f2fs_sb_info *sbi,
+				block_t blkaddr) { }
+static inline void f2fs_cache_compressed_page(struct f2fs_sb_info *sbi,
+				struct page *page, nid_t ino, block_t blkaddr) { }
+static inline bool f2fs_load_compressed_page(struct f2fs_sb_info *sbi,
+				struct page *page, block_t blkaddr) { return false; }
+static inline void f2fs_invalidate_compress_pages(struct f2fs_sb_info *sbi,
+							nid_t ino) { }
+#define inc_compr_inode_stat(inode)		do { } while (0)
 #endif
 
 static inline int set_compress_context(struct inode *inode)
